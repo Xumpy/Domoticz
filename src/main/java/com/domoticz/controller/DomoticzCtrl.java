@@ -2,44 +2,44 @@ package com.domoticz.controller;
 
 
 import com.domoticz.model.Device;
-import com.domoticz.services.Switch;
+import com.domoticz.services.components.DomoticzComponent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Controller
 public class DomoticzCtrl {
     @Autowired Map<Integer, Device> receivedDevices;
-    @Autowired Switch switchDevice;
+    @Autowired List<? extends DomoticzComponent> domoticzComponents;
 
-    private List<List<Integer>> linkedIdxMap(){
-        List<List<Integer>> linkedSwitches = new ArrayList<>();
+    private static final Logger LOGGER = LogManager.getLogger(DomoticzCtrl.class);
 
-        List<Integer> livingLinks = new ArrayList<>();
-        livingLinks.add(79);
-        livingLinks.add(82);
-
-        List<Integer> livingRechts = new ArrayList<>();
-        livingRechts.add(78);
-        livingRechts.add(81);
-
-        linkedSwitches.add(livingLinks);
-        linkedSwitches.add(livingRechts);
-
-        return linkedSwitches;
+    private Boolean isDeviceStateChanged(Device device){
+        if (receivedDevices.containsKey(device.getIdx()) && receivedDevices.get(device.getIdx()).equals(device)){
+            return false;
+        }
+        return true;
     }
 
     @RequestMapping("/domoticz")
     public String enterDomoticzBackend(@RequestBody Device device){
-        System.out.println("Received idx: " + device.getIdx() + " with type " + device.getDeviceType());
-        receivedDevices.put(device.getIdx(), device);
+        if (isDeviceStateChanged(device)) {
+            LOGGER.info("Received idx: " + device.getIdx() + " with type " + device.getDeviceType());
+            receivedDevices.put(device.getIdx(), device);
 
-        switchDevice.withLink(device, linkedIdxMap());
+            for (DomoticzComponent domoticzComponent: domoticzComponents){
+                if (domoticzComponent.getIdx().equals(device.getIdx())){
+                    domoticzComponent.setDevice(device);
+                    domoticzComponent.executeAction(device);
+                }
+            }
+        }
 
         return "201";
     }

@@ -78,4 +78,19 @@ public class Device {
     public void setRawData(String[] rawData) {
         this.rawData = rawData;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof Device){
+            Device device = (Device) object;
+            if (idx.equals(device.getIdx()) &&
+                    name.equals(device.getName()) &&
+                    deviceType.equals(device.getDeviceType()) &&
+                    deviceSubType.equals(device.getDeviceSubType()) &&
+                    state.equals(device.getState()))
+                return true;
+        }
+
+        return false;
+    }
 }
