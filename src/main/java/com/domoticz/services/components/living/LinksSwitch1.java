@@ -16,12 +16,10 @@ public class LinksSwitch1 extends SwitchComponent{
     @Override
     public void onAction() {
         rechtsSwitch2.turnSwitchOn();
-        rechtsSwitch2.sendDeviceToDomoticzServer();
     }
 
     @Override
     public void offAction() {
         rechtsSwitch2.turnSwitchOff();
-        rechtsSwitch2.sendDeviceToDomoticzServer();
     }
 }

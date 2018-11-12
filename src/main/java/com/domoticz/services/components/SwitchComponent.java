@@ -42,14 +42,17 @@ public abstract class SwitchComponent extends DomoticzComponent {
 
     public void turnSwitchOn(){
         super.getDevice().setState(ON_STATE);
+        super.setChanged(true);
     }
 
     public void turnSwitchOff(){
         super.getDevice().setState(OFF_STATE);
+        super.setChanged(true);
     }
 
     public void turnSwitchToggle(){
         super.getDevice().setState(TOGGLE_STATE);
+        super.setChanged(true);
     }
 
     public abstract void onAction();

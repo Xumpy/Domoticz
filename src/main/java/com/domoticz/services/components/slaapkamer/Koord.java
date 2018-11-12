@@ -16,12 +16,10 @@ public class Koord extends SwitchComponent{
     @Override
     public void onAction() {
         knop1.turnSwitchToggle();
-        knop1.sendDeviceToDomoticzServer();
     }
 
     @Override
     public void offAction() {
         knop1.turnSwitchToggle();
-        knop1.sendDeviceToDomoticzServer();
     }
 }

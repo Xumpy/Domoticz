@@ -39,6 +39,11 @@ public class DomoticzCtrl {
                     domoticzComponent.executeAction(device);
                 }
             }
+            for (DomoticzComponent domoticzComponent: domoticzComponents){
+                if (domoticzComponent.getChanged()){
+                    domoticzComponent.sendDeviceToDomoticzServer();
+                }
+            }
         }
 
         return "201";
