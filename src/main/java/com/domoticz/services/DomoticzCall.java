@@ -1,28 +1,30 @@
 package com.domoticz.services;
 
 import com.domoticz.model.Device;
+import com.domoticz.services.components.DomoticzComponent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Service
 public class DomoticzCall {
-    @Autowired Map<Integer, Device> receivedDevices;
-    private static String domoticzHome="http://192.168.1.31:8080/json.htm?type=command&";
+    private static final Logger logger = LogManager.getLogger(DomoticzComponent.class);
+    private static final String DOMOTICZ_BASE_URL = "http://192.168.1.31:8080/json.htm";
+    private static final String USERNAME = "xumpy";
+    private static final String PASSWORD = "Pc@t3900!";
 
-    private void makeDomoticzCall(String url){
+    public void makeCall(String domoticzUrl){
         RestTemplate restTemplate = new RestTemplate();
-        System.out.println(url);
-        System.out.println(restTemplate.getForObject(url, String.class));
-    }
-
-    public void makeCallSwitch(Integer idx, String state){
-        if (!(receivedDevices.containsKey(idx) && receivedDevices.get(idx).getState().equals(state))){
-            makeDomoticzCall(domoticzHome + "param=switchlight&idx=" + idx + "&switchcmd=" + state);
-        } else {
-            System.out.println("State not send cause of the same state exists in the log");
-        }
+        restTemplate.getInterceptors().add(
+                new BasicAuthorizationInterceptor(USERNAME, PASSWORD));
+        System.out.println(domoticzUrl);
+        logger.debug(DOMOTICZ_BASE_URL + domoticzUrl);
+        logger.debug(restTemplate.getForObject(DOMOTICZ_BASE_URL + domoticzUrl, String.class));
     }
 }

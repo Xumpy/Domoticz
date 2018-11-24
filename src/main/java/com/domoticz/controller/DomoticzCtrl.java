@@ -29,8 +29,9 @@ public class DomoticzCtrl {
 
     @RequestMapping("/domoticz")
     public String enterDomoticzBackend(@RequestBody Device device){
+        LOGGER.info("Received idx: " + device.getIdx() + " with type " + device.getDeviceType());
         if (isDeviceStateChanged(device)) {
-            LOGGER.info("Received idx: " + device.getIdx() + " with type " + device.getDeviceType());
+            LOGGER.info("Device idx: " + device.getIdx() + " state changed to: " + device.getState());
             receivedDevices.put(device.getIdx(), device);
 
             for (DomoticzComponent domoticzComponent: domoticzComponents){

@@ -1,12 +1,9 @@
 package com.domoticz.services.components;
 
 import com.domoticz.model.Device;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.domoticz.services.DomoticzCall;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,13 +11,10 @@ import java.util.Map;
 @Component
 public abstract class DomoticzComponent {
     @Autowired Map<Integer, Device> receivedDevices;
+    @Autowired DomoticzCall domoticzCall;
 
     private Boolean changed = false;
     private Device device;
-    private static final String DOMOTICZ_BASE_URL = "http://192.168.1.31:8080/json.htm";
-    private static final Logger logger = LogManager.getLogger(DomoticzComponent.class);
-    private static final String USERNAME = "xumpy";
-    private static final String PASSWORD = "Pc@t3900!";
 
     public DomoticzComponent(){
         device = new Device();
@@ -55,7 +49,7 @@ public abstract class DomoticzComponent {
         }
         domoticzUrlMap.putAll(deviceToDomoticzMapForURL(device));
 
-        return DOMOTICZ_BASE_URL + mapToStringUrl(domoticzUrlMap);
+        return mapToStringUrl(domoticzUrlMap);
     }
 
     public abstract Integer getIdx();
@@ -64,11 +58,7 @@ public abstract class DomoticzComponent {
     public abstract void executeAction(Device device);
 
     public void sendDeviceToDomoticzServer(){
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getInterceptors().add(
-                new BasicAuthorizationInterceptor(USERNAME, PASSWORD));
-        logger.debug(buildDomoticzUrl());
-        logger.debug(restTemplate.getForObject(buildDomoticzUrl(), String.class));
+        domoticzCall.makeCall(buildDomoticzUrl());
     }
 
     public void setDevice(Device device) {
